@@ -15,7 +15,7 @@ function sucet(a: number, b: number): number {  // funkcia zoberie cislo A a cis
     return vysledok // vraciame výsledok po operácii
 }
 
-function odcitanie(a: number, b: number): number {
+function odcitanie(a: number, b: number): number { // funguje to na rovankom princípe ako predošlá funkcia a následujuce
     var vysledok = (+a) - (+b); 
     return vysledok
 }
