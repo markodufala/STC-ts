@@ -9,7 +9,7 @@
     
     constructor(_element: number){
         this.element = _element;
-        
+        // parnost
         if (_element %2 ===0){
             this.parnost = true
         }

@@ -52,10 +52,10 @@ function randomNumber(minumum : number, maximum : number){
 
 cisla.forEach((ciselnyElement) => {
     vsetkyCisla = pridajDoStringu(vsetkyCisla, ciselnyElement.element)
-    if(ciselnyElement.parnost) {
+    if(ciselnyElement.parnost == true) {
         parneCisla = pridajDoStringu(parneCisla, ciselnyElement.element)
         for(let index = 0; index < 9; index++) {
-            if(ciselnyElement.delitele.indexOf(index + 1) > - 1) {
+            if(ciselnyElement.delitele.indexOf(index + 1) > 0) {
                 delitele[index] = pridajDoStringu(delitele[index], ciselnyElement.element)
             }
         }

@@ -8,6 +8,7 @@ var Cisla = /** @class */ (function () {
         this.delitele = [];
         this.prvocislo = false;
         this.element = _element;
+        // parnost
         if (_element % 2 === 0) {
             this.parnost = true;
         }
