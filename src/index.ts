@@ -1,20 +1,21 @@
 import { type } from 'os';
 import Nastavenia from './Nastavenia';
 import Cisla from './Cisla';
+import { count } from 'console';
 
 let cisla: Cisla[] = []
 let vsetkyCisla: string = "";
-let prvoCisla: string = "";
 let parneCisla: string = "";
 let neparneCisla: string = "";
 let delitele: string[] = ["", "", "", "", "", "", "", "", ""];
+let prvoCisla: string = "";
 
 
 /**
  * Pred definované nastavenia type
  */
  let startSettings: Nastavenia = {
-    MAX_SAFE_INTEGER: 100000,
+    MAX_SAFE_INTEGER: 100000, // toto je horná hranica intervali pre náhodné čislo, malo by tam fungovať aj 9007199254740991 
     DLZKA_POLA: 100
 };
 
@@ -26,7 +27,7 @@ let delitele: string[] = ["", "", "", "", "", "", "", "", ""];
  * @param oddelovac oddelovac zprehladnuje string
  * @returns 
  */
-let pridajDoStringu = (hlavnyString: string, cislo: number, oddelovac: string = ","): string => {
+function pridajDoStringu(hlavnyString: string, cislo: number, oddelovac: string = ","){
     if(hlavnyString === "") {
         hlavnyString += JSON.stringify(cislo);
         } else {
@@ -35,37 +36,31 @@ let pridajDoStringu = (hlavnyString: string, cislo: number, oddelovac: string = 
     return hlavnyString
 }
 
-
-// Generating random numbers, and creating objects with our pre-defined class NumberElement
+// generujú sa náhodné čísla a vytváraju sa nové objekty Classy Cisla
 for(let i = 0; i < startSettings.DLZKA_POLA; i++) {
-    cisla.push(new Cisla(Math.floor(Math.random() * (startSettings.MAX_SAFE_INTEGER - 1))))
+    //cisla.push(new Cisla(Math.floor(Math.random() * (startSettings.MAX_SAFE_INTEGER-1))))
+    cisla.push(new Cisla(Math.floor(Math.random() * (startSettings.MAX_SAFE_INTEGER - 1))));
 }
 
+
 cisla.forEach((ciselnyElement) => {
-    vsetkyCisla = pridajDoStringu(vsetkyCisla, ciselnyElement.element);
-
-   
+    vsetkyCisla = pridajDoStringu(vsetkyCisla, ciselnyElement.element)
+    
     if(ciselnyElement.parnost) {
-        parneCisla = pridajDoStringu(parneCisla, ciselnyElement.element);
-        
-        delitele.forEach((element, index) => {
-            if(ciselnyElement.delitele.indexOf(index + 1) > - 1) {
-                delitele[index] = pridajDoStringu(delitele[index], ciselnyElement.element);
-            }
-        });
-    } else {
-        neparneCisla = pridajDoStringu(neparneCisla, ciselnyElement.element);
+        parneCisla = pridajDoStringu(parneCisla, ciselnyElement.element)
 
+        for(let index = 0; index < 9; index++) {
+            if(ciselnyElement.delitele.indexOf(index + 1) > - 1) {
+                delitele[index] = pridajDoStringu(delitele[index], ciselnyElement.element)
+            }
+        }
+    } else {
+        neparneCisla = pridajDoStringu(neparneCisla, ciselnyElement.element)
         if(ciselnyElement.prvocislo) {  
-            prvoCisla = pridajDoStringu(prvoCisla, ciselnyElement.element);
+            prvoCisla = pridajDoStringu(prvoCisla, ciselnyElement.element)
         }
     }
-
 });
-
-// for(let i = 0; i < startSettings.DLZKA_POLA; i++) {
-
-// }
 
 console.log("Náhodne vybranné čísla")
 console.log(vsetkyCisla)
@@ -84,4 +79,6 @@ delitele.forEach((element, delitel) => {
 });
 console.log("Prvočísla");
 console.log(prvoCisla)
+
+
 

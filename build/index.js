@@ -6,10 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Cisla_1 = __importDefault(require("./Cisla"));
 var cisla = [];
 var vsetkyCisla = "";
-var prvoCisla = "";
 var parneCisla = "";
 var neparneCisla = "";
-var delitele = [""];
+var delitele = ["", "", "", "", "", "", "", "", ""];
+var prvoCisla = "";
 /**
  * Pred definované nastavenia type
  */
@@ -24,7 +24,7 @@ var startSettings = {
  * @param oddelovac oddelovac zprehladnuje string
  * @returns
  */
-var pridajDoStringu = function (hlavnyString, cislo, oddelovac) {
+function pridajDoStringu(hlavnyString, cislo, oddelovac) {
     if (oddelovac === void 0) { oddelovac = ","; }
     if (hlavnyString === "") {
         hlavnyString += JSON.stringify(cislo);
@@ -33,20 +33,21 @@ var pridajDoStringu = function (hlavnyString, cislo, oddelovac) {
         hlavnyString += " " + oddelovac + " " + JSON.stringify(cislo);
     }
     return hlavnyString;
-};
-// Generating random numbers, and creating objects with our pre-defined class NumberElement
+}
+// generujú sa náhodné čísla a vytváraju sa nové objekty Classy Cisla
 for (var i = 0; i < startSettings.DLZKA_POLA; i++) {
+    //cisla.push(new Cisla(Math.floor(Math.random() * (startSettings.MAX_SAFE_INTEGER-1))))
     cisla.push(new Cisla_1.default(Math.floor(Math.random() * (startSettings.MAX_SAFE_INTEGER - 1))));
 }
 cisla.forEach(function (ciselnyElement) {
     vsetkyCisla = pridajDoStringu(vsetkyCisla, ciselnyElement.element);
     if (ciselnyElement.parnost) {
         parneCisla = pridajDoStringu(parneCisla, ciselnyElement.element);
-        delitele.forEach(function (element, index) {
+        for (var index = 0; index < 9; index++) {
             if (ciselnyElement.delitele.indexOf(index + 1) > -1) {
                 delitele[index] = pridajDoStringu(delitele[index], ciselnyElement.element);
             }
-        });
+        }
     }
     else {
         neparneCisla = pridajDoStringu(neparneCisla, ciselnyElement.element);
@@ -55,8 +56,6 @@ cisla.forEach(function (ciselnyElement) {
         }
     }
 });
-// for(let i = 0; i < startSettings.DLZKA_POLA; i++) {
-// }
 console.log("Náhodne vybranné čísla");
 console.log(vsetkyCisla);
 console.log("Párne čísla");

@@ -4,7 +4,6 @@
  class Cisla {
     public element: number;
     public parnost: Boolean;
-
     public delitele: number[] = [];
     public prvocislo: boolean = false;
     
