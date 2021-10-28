@@ -1,5 +1,5 @@
 /**
- * Základné nastavenia pre tento projekt pomocou typu
+ * Základné nastavenia pre pomocou typu
  */
  type Nastavenia = {
     MAX_SAFE_INTEGER: number,

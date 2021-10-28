@@ -36,8 +36,16 @@ function pridajDoStringu(hlavnyString, cislo, oddelovac) {
 }
 // generujú sa náhodné čísla a vytváraju sa nové objekty Classy Cisla
 for (var i = 0; i < startSettings.DLZKA_POLA; i++) {
-    //cisla.push(new Cisla(Math.floor(Math.random() * (startSettings.MAX_SAFE_INTEGER-1))))
-    cisla.push(new Cisla_1.default(Math.floor(Math.random() * (startSettings.MAX_SAFE_INTEGER - 1))));
+    cisla.push(new Cisla_1.default(randomNumber(1, startSettings.MAX_SAFE_INTEGER)));
+}
+/**
+ * Funkcia pre generovanie náhodneho čísla
+ * @param minumum minimalna hodnota
+ * @param maximum maximálna hodota
+ * @returns
+ */
+function randomNumber(minumum, maximum) {
+    return Math.floor(Math.random() * (maximum - minumum)) + minumum;
 }
 cisla.forEach(function (ciselnyElement) {
     vsetkyCisla = pridajDoStringu(vsetkyCisla, ciselnyElement.element);

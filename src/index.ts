@@ -19,7 +19,6 @@ let prvoCisla: string = "";
     DLZKA_POLA: 100
 };
 
-
 /**
  * funkcia automaticky prida cislo do hlavneho stringu s oddelovacom, kotry sluzi na prehladnost
  * @param hlavnyString do tohto hlavneho stringy pridavame Cislo
@@ -38,17 +37,23 @@ function pridajDoStringu(hlavnyString: string, cislo: number, oddelovac: string 
 
 // generujú sa náhodné čísla a vytváraju sa nové objekty Classy Cisla
 for(let i = 0; i < startSettings.DLZKA_POLA; i++) {
-    //cisla.push(new Cisla(Math.floor(Math.random() * (startSettings.MAX_SAFE_INTEGER-1))))
-    cisla.push(new Cisla(Math.floor(Math.random() * (startSettings.MAX_SAFE_INTEGER - 1))));
+    cisla.push(new Cisla(randomNumber(1 , startSettings.MAX_SAFE_INTEGER)));
 }
 
+/**
+ * Funkcia pre generovanie náhodneho čísla
+ * @param minumum minimalna hodnota
+ * @param maximum maximálna hodota
+ * @returns 
+ */
+function randomNumber(minumum : number, maximum : number){
+    return Math.floor(Math.random() * (maximum - minumum)) + minumum;
+}
 
 cisla.forEach((ciselnyElement) => {
     vsetkyCisla = pridajDoStringu(vsetkyCisla, ciselnyElement.element)
-    
     if(ciselnyElement.parnost) {
         parneCisla = pridajDoStringu(parneCisla, ciselnyElement.element)
-
         for(let index = 0; index < 9; index++) {
             if(ciselnyElement.delitele.indexOf(index + 1) > - 1) {
                 delitele[index] = pridajDoStringu(delitele[index], ciselnyElement.element)
@@ -64,14 +69,10 @@ cisla.forEach((ciselnyElement) => {
 
 console.log("Náhodne vybranné čísla")
 console.log(vsetkyCisla)
-
 console.log("Párne čísla")
 console.log(parneCisla)
-
 console.log("Nepárne čísla")
 console.log(neparneCisla)
-
-
 delitele.forEach((element, delitel) => {
     console.log("Čísla delitelné číslom");
     console.log(delitel+1)
