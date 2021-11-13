@@ -1,85 +1,56 @@
-import { type } from 'os';
-import Nastavenia from './Nastavenia';
-import Cisla from './Cisla';
-import { count } from 'console';
-
-let cisla: Cisla[] = []
-let vsetkyCisla: string = "";
-let parneCisla: string = "";
-let neparneCisla: string = "";
-let delitele: string[] = ["", "", "", "", "", "", "", "", ""];
-let prvoCisla: string = "";
+import fs from "fs"
+import {Book} from "./books"
+import express from "express"
+import cors from "cors"
+import bodyParser, { json, urlencoded} from "body-parser"
+import http from "http"
 
 
-/**
- * Pred definované nastavenia type
- */
- let startSettings: Nastavenia = {
-    MAX_SAFE_INTEGER: 100000, // toto je horná hranica intervali pre náhodné čislo, malo by tam fungovať aj 9007199254740991 
-    DLZKA_POLA: 100
-};
+const myFile = fs.readFileSync("src/books.json")
+const myJSON: Book[] = JSON.parse(myFile.toString())
+let app
 
-/**
- * funkcia automaticky prida cislo do hlavneho stringu s oddelovacom, kotry sluzi na prehladnost
- * @param hlavnyString do tohto hlavneho stringy pridavame Cislo
- * @param cislo cislo ktore pridavame do hlavneho stringu
- * @param oddelovac oddelovac zprehladnuje string
- * @returns 
- */
-function pridajDoStringu(hlavnyString: string, cislo: number, oddelovac: string = ","){
-    if(hlavnyString === "") {
-        hlavnyString += JSON.stringify(cislo);
+
+let myMap = new Map()
+myJSON.forEach((book: Book) => {
+    myMap.set(book.id,<Book>book)
+})
+
+console.log(myJSON)
+
+function createserver() {
+    app = express()
+    app.use(cors())
+    app.use(json())
+    app.use(urlencoded({extended: false}))
+
+    http.createServer(app).listen(3000, () => {
+        console.log("Running server on port 3000")
+    })
+
+    app.get("/api/library/book/:id/info", (req, res) => {
+        let _id = parseInt(req.params["id"])
+        let book = myMap.get(_id)
+        if (myMap.has(_id)) {
+            console.log("The id of your book is " + _id + ". The name of the book is: " + book.name)
+            res.json({id: book.id, name: book.name, author: book.author, genre: book.genre})
         } else {
-        hlavnyString += ` ${oddelovac} ${JSON.stringify(cislo)}`;
+            res.json({Response: "There is no book in the json with this ID"})
         }
-    return hlavnyString
-}
+    })
 
-// generujú sa náhodné čísla a vytváraju sa nové objekty Classy Cisla
-for(let i = 0; i < startSettings.DLZKA_POLA; i++) {
-    cisla.push(new Cisla(randomNumber(1 , startSettings.MAX_SAFE_INTEGER)));
-}
 
-/**
- * Funkcia pre generovanie náhodneho čísla
- * @param minumum minimalna hodnota
- * @param maximum maximálna hodota
- * @returns 
- */
-function randomNumber(minumum : number, maximum : number){
-    return Math.floor(Math.random() * (maximum - minumum)) + minumum;
-}
-
-cisla.forEach((ciselnyElement) => {
-    vsetkyCisla = pridajDoStringu(vsetkyCisla, ciselnyElement.element)
-    if(ciselnyElement.parnost == true) {
-        parneCisla = pridajDoStringu(parneCisla, ciselnyElement.element)
-        for(let index = 0; index < 9; index++) {
-            if(ciselnyElement.delitele.indexOf(index + 1) > 0) {
-                delitele[index] = pridajDoStringu(delitele[index], ciselnyElement.element)
-            }
+    app.post("/api/library/book/:id/info", (req, res) => {
+        let _id = parseInt(req.params["id"])
+        let book = myMap.get(_id)
+        console.log(_id)
+        if (myMap.has(_id)) {
+            res.json(book)
+        } else {
+            res.json({Response: "There is no book in the json with this ID"})
         }
-    } else {
-        neparneCisla = pridajDoStringu(neparneCisla, ciselnyElement.element)
-        if(ciselnyElement.prvocislo) {  
-            prvoCisla = pridajDoStringu(prvoCisla, ciselnyElement.element)
-        }
-    }
-});
-
-console.log("Náhodne vybranné čísla")
-console.log(vsetkyCisla)
-console.log("Párne čísla")
-console.log(parneCisla)
-console.log("Nepárne čísla")
-console.log(neparneCisla)
-delitele.forEach((element, delitel) => {
-    console.log("Čísla delitelné číslom");
-    console.log(delitel+1)
-    console.log(element)
-});
-console.log("Prvočísla");
-console.log(prvoCisla)
-
+    })
+}
+createserver()
 
 

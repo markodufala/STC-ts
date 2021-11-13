@@ -3,77 +3,48 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Cisla_1 = __importDefault(require("./Cisla"));
-var cisla = [];
-var vsetkyCisla = "";
-var parneCisla = "";
-var neparneCisla = "";
-var delitele = ["", "", "", "", "", "", "", "", ""];
-var prvoCisla = "";
-/**
- * Pred definované nastavenia type
- */
-var startSettings = {
-    MAX_SAFE_INTEGER: 100000,
-    DLZKA_POLA: 100
-};
-/**
- * funkcia automaticky prida cislo do hlavneho stringu s oddelovacom, kotry sluzi na prehladnost
- * @param hlavnyString do tohto hlavneho stringy pridavame Cislo
- * @param cislo cislo ktore pridavame do hlavneho stringu
- * @param oddelovac oddelovac zprehladnuje string
- * @returns
- */
-function pridajDoStringu(hlavnyString, cislo, oddelovac) {
-    if (oddelovac === void 0) { oddelovac = ","; }
-    if (hlavnyString === "") {
-        hlavnyString += JSON.stringify(cislo);
-    }
-    else {
-        hlavnyString += " " + oddelovac + " " + JSON.stringify(cislo);
-    }
-    return hlavnyString;
-}
-// generujú sa náhodné čísla a vytváraju sa nové objekty Classy Cisla
-for (var i = 0; i < startSettings.DLZKA_POLA; i++) {
-    cisla.push(new Cisla_1.default(randomNumber(1, startSettings.MAX_SAFE_INTEGER)));
-}
-/**
- * Funkcia pre generovanie náhodneho čísla
- * @param minumum minimalna hodnota
- * @param maximum maximálna hodota
- * @returns
- */
-function randomNumber(minumum, maximum) {
-    return Math.floor(Math.random() * (maximum - minumum)) + minumum;
-}
-cisla.forEach(function (ciselnyElement) {
-    vsetkyCisla = pridajDoStringu(vsetkyCisla, ciselnyElement.element);
-    if (ciselnyElement.parnost == true) {
-        parneCisla = pridajDoStringu(parneCisla, ciselnyElement.element);
-        for (var index = 0; index < 9; index++) {
-            if (ciselnyElement.delitele.indexOf(index + 1) > 0) {
-                delitele[index] = pridajDoStringu(delitele[index], ciselnyElement.element);
-            }
-        }
-    }
-    else {
-        neparneCisla = pridajDoStringu(neparneCisla, ciselnyElement.element);
-        if (ciselnyElement.prvocislo) {
-            prvoCisla = pridajDoStringu(prvoCisla, ciselnyElement.element);
-        }
-    }
+const fs_1 = __importDefault(require("fs"));
+const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const body_parser_1 = require("body-parser");
+const http_1 = __importDefault(require("http"));
+const myFile = fs_1.default.readFileSync("src/books.json");
+const myJSON = JSON.parse(myFile.toString());
+let app;
+let myMap = new Map();
+myJSON.forEach((book) => {
+    myMap.set(book.id, book);
 });
-console.log("Náhodne vybranné čísla");
-console.log(vsetkyCisla);
-console.log("Párne čísla");
-console.log(parneCisla);
-console.log("Nepárne čísla");
-console.log(neparneCisla);
-delitele.forEach(function (element, delitel) {
-    console.log("Čísla delitelné číslom");
-    console.log(delitel + 1);
-    console.log(element);
-});
-console.log("Prvočísla");
-console.log(prvoCisla);
+console.log(myJSON);
+function createserver() {
+    app = (0, express_1.default)();
+    app.use((0, cors_1.default)());
+    app.use((0, body_parser_1.json)());
+    app.use((0, body_parser_1.urlencoded)({ extended: false }));
+    http_1.default.createServer(app).listen(3000, () => {
+        console.log("Running server on port 3000");
+    });
+    app.get("/api/library/book/:id/info", (req, res) => {
+        let _id = parseInt(req.params["id"]);
+        let book = myMap.get(_id);
+        if (myMap.has(_id)) {
+            console.log("The id of your book is " + _id + ". The name of the book is: " + book.name);
+            res.json({ id: book.id, name: book.name, author: book.author, genre: book.genre });
+        }
+        else {
+            res.json({ Response: "There is no book in the json with this ID" });
+        }
+    });
+    app.post("/api/library/book/:id/info", (req, res) => {
+        let _id = parseInt(req.params["id"]);
+        let book = myMap.get(_id);
+        console.log(_id);
+        if (myMap.has(_id)) {
+            res.json(book);
+        }
+        else {
+            res.json({ Response: "There is no book in the json with this ID" });
+        }
+    });
+}
+createserver();
