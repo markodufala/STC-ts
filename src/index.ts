@@ -25,8 +25,8 @@ function createserver() {
     })
 
     app.get("/api/library/book/:id/info", (req, res) => {
-        let _id = parseInt(req.params["id"])
-        let book = myMap.get(_id)
+        const _id = parseInt(req.params["id"])
+        const book = myMap.get(_id)
         if (myMap.has(_id)) {
             console.log("The id of your book is " + _id + ". The name of the book is: " + book.name)
             res.json({id: book.id, name: book.name, author: book.author, genre: book.genre})
@@ -36,9 +36,8 @@ function createserver() {
     })
 
     app.post("/api/library/book/:id/info", (req, res) => {
-        let _id = parseInt(req.params["id"])
-        let book = myMap.get(_id)
-        console.log(_id)
+        const _id = parseInt(req.params["id"])
+        const book = myMap.get(_id)
         if (myMap.has(_id)) {
             res.json(book)
         } else {
