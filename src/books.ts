@@ -3,8 +3,8 @@ export type Book = {
     name: String
     author: String[]
     genre: String[]
-    published: Number
+    year_published: Number
     publisher: String
-    origin_country: String
-    pages: Number
+    country: String
+    number_of_pages: Number
 }

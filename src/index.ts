@@ -6,17 +6,13 @@ import bodyParser, { json, urlencoded} from "body-parser"
 import http from "http"
 
 
-const myFile = fs.readFileSync("src/books.json")
-const myJSON: Book[] = JSON.parse(myFile.toString())
+const myJSON: Book[] = JSON.parse(fs.readFileSync("src/books.json").toString())
 let app
-
 
 let myMap = new Map()
 myJSON.forEach((book: Book) => {
     myMap.set(book.id,<Book>book)
 })
-
-console.log(myJSON)
 
 function createserver() {
     app = express()
@@ -39,7 +35,6 @@ function createserver() {
         }
     })
 
-
     app.post("/api/library/book/:id/info", (req, res) => {
         let _id = parseInt(req.params["id"])
         let book = myMap.get(_id)
@@ -52,5 +47,3 @@ function createserver() {
     })
 }
 createserver()
-
-

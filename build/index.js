@@ -8,14 +8,12 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = require("body-parser");
 const http_1 = __importDefault(require("http"));
-const myFile = fs_1.default.readFileSync("src/books.json");
-const myJSON = JSON.parse(myFile.toString());
+const myJSON = JSON.parse(fs_1.default.readFileSync("src/books.json").toString());
 let app;
 let myMap = new Map();
 myJSON.forEach((book) => {
     myMap.set(book.id, book);
 });
-console.log(myJSON);
 function createserver() {
     app = (0, express_1.default)();
     app.use((0, cors_1.default)());
