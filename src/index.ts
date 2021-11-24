@@ -5,7 +5,6 @@ import cors from "cors";
 import bodyParser, { json, urlencoded } from "body-parser";
 import http from "http";
 
-//const myJSON: Book[] = JSON.parse(fs.readFileSync("src/books.json").toString());
 let app;
 
 function createserver() {
@@ -19,13 +18,15 @@ function createserver() {
   });
 
   app.get("/api/library/book/:id/info", (req, res) => {
-    const myJSON: Book[] = JSON.parse(
+    let myJSON: Book[] = JSON.parse(
       fs.readFileSync("src/books.json").toString()
     );
+
     let myMap = new Map();
     myJSON.forEach((book: Book) => {
       myMap.set(book.id, <Book>book);
     });
+
     const _id = parseInt(req.params["id"]);
     if (myMap.has(_id)) {
       const book = myMap.get(_id);
@@ -47,14 +48,15 @@ function createserver() {
   });
 
   app.post("/api/library/book/:id/info", (req, res) => {
-    const myJSON: Book[] = JSON.parse(
+    let myJSON: Book[] = JSON.parse(
       fs.readFileSync("src/books.json").toString()
     );
+
     let myMap = new Map();
     myJSON.forEach((book: Book) => {
       myMap.set(book.id, <Book>book);
     });
-    // console.log(myJSON);
+
     const _id = parseInt(req.params["id"]);
     if (myMap.has(_id)) {
       const book = myMap.get(_id);
@@ -65,20 +67,21 @@ function createserver() {
   });
 
   app.put("/api/library/book/:id/add", (req, res) => {
-    const myJSON: Book[] = JSON.parse(
+    let myJSON: Book[] = JSON.parse(
       fs.readFileSync("src/books.json").toString()
     );
+
     let myMap = new Map();
     myJSON.forEach((book: Book) => {
       myMap.set(book.id, <Book>book);
     });
-    console.log(req.body);
+
     const _id = parseInt(req.params["id"]);
     if (myMap.has(_id)) {
       res.json({ Response: "There is already book in the json with this ID" });
     } else {
       myJSON.push({
-        id: req.body["id"],
+        id: _id,
         name: req.body["name"],
         author: req.body["author"],
         genre: req.body["genre"],
@@ -88,11 +91,39 @@ function createserver() {
         number_of_pages: req.body["pages"],
       });
 
-      let json = JSON.stringify(myJSON);
-      fs.writeFile("src/books.json", json, "utf8", function (err) {
+      fs.writeFile("src/books.json", JSON.stringify(myJSON), function (err) {
+        if (err) return console.log(err);
         res.json({ Response: "The book was added" });
       });
     }
   });
+  app.delete("/api/library/book/:id/delete", (req, res) => {
+    let myJSON: Book[] = JSON.parse(
+      fs.readFileSync("src/books.json").toString()
+    );
+
+    let myMap = new Map();
+    myJSON.forEach((book: Book) => {
+      myMap.set(book.id, <Book>book);
+    });
+
+    const _id = parseInt(req.params["id"]);
+    if (myMap.has(_id)) {
+      myJSON = myJSON.filter((book: Book) => book.id !== _id);
+      let json = JSON.stringify(myJSON);
+      //fs.writeFileSync("src/book.json", json);
+      fs.writeFile("src/books.json", json, function (err) {
+        if (err) return console.log(err);
+        res.json({ Response: "The book was deleted" });
+      });
+    } else {
+      res.json("The book with this id is not in the list.");
+    }
+  });
 }
 createserver();
+
+// app.delete(
+//   apiRoot + id,
+//   send((req) => Product.destroy({ where: { id: +req.params.id } }), 204)
+// );
