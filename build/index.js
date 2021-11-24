@@ -81,6 +81,7 @@ function createserver() {
                 if (err)
                     return console.log(err);
                 res.json({ Response: "The book was added" });
+                console.log(req.body);
             });
         }
     });
@@ -94,20 +95,16 @@ function createserver() {
         if (myMap.has(_id)) {
             myJSON = myJSON.filter((book) => book.id !== _id);
             let json = JSON.stringify(myJSON);
-            //fs.writeFileSync("src/book.json", json);
             fs_1.default.writeFile("src/books.json", json, function (err) {
                 if (err)
                     return console.log(err);
                 res.json({ Response: "The book was deleted" });
+                console.log(myJSON);
             });
         }
         else {
-            res.json("The book with this id is not in the list.");
+            res.json({ Response: "The book with this id is not in the list" });
         }
     });
 }
 createserver();
-// app.delete(
-//   apiRoot + id,
-//   send((req) => Product.destroy({ where: { id: +req.params.id } }), 204)
-// );
