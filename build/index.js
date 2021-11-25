@@ -9,6 +9,17 @@ const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = require("body-parser");
 const http_1 = __importDefault(require("http"));
 let app;
+let myJSON = JSON.parse(fs_1.default.readFileSync("src/books.json").toString());
+let myMap = new Map();
+myJSON.forEach((book) => {
+    myMap.set(book.id, book);
+});
+function newMap() {
+    myJSON = JSON.parse(fs_1.default.readFileSync("src/books.json").toString());
+    myJSON.forEach((book) => {
+        myMap.set(book.id, book);
+    });
+}
 function createserver() {
     app = (0, express_1.default)();
     app.use((0, cors_1.default)());
@@ -18,18 +29,10 @@ function createserver() {
         console.log("Running server on port 3000");
     });
     app.get("/api/library/book/:id/info", (req, res) => {
-        let myJSON = JSON.parse(fs_1.default.readFileSync("src/books.json").toString());
-        let myMap = new Map();
-        myJSON.forEach((book) => {
-            myMap.set(book.id, book);
-        });
+        newMap();
         const _id = parseInt(req.params["id"]);
         if (myMap.has(_id)) {
             const book = myMap.get(_id);
-            console.log("The id of your book is " +
-                _id +
-                ". The name of the book is: " +
-                book.name);
             res.json({
                 id: book.id,
                 name: book.name,
@@ -42,11 +45,7 @@ function createserver() {
         }
     });
     app.post("/api/library/book/:id/info", (req, res) => {
-        let myJSON = JSON.parse(fs_1.default.readFileSync("src/books.json").toString());
-        let myMap = new Map();
-        myJSON.forEach((book) => {
-            myMap.set(book.id, book);
-        });
+        newMap();
         const _id = parseInt(req.params["id"]);
         if (myMap.has(_id)) {
             const book = myMap.get(_id);
@@ -57,11 +56,7 @@ function createserver() {
         }
     });
     app.put("/api/library/book/:id/add", (req, res) => {
-        let myJSON = JSON.parse(fs_1.default.readFileSync("src/books.json").toString());
-        let myMap = new Map();
-        myJSON.forEach((book) => {
-            myMap.set(book.id, book);
-        });
+        newMap();
         const _id = parseInt(req.params["id"]);
         if (myMap.has(_id)) {
             res.json({ Response: "There is already book in the json with this ID" });
@@ -77,11 +72,11 @@ function createserver() {
                 country: req.body["origin_country"],
                 number_of_pages: req.body["pages"],
             });
-            fs_1.default.writeFile("src/books.json", JSON.stringify(myJSON), function (err) {
+            let newBookList = JSON.stringify(myJSON);
+            fs_1.default.writeFile("src/books.json", newBookList, function (err) {
                 if (err)
                     return console.log(err);
                 res.json({ Response: "The book was added" });
-                console.log(req.body);
             });
         }
     });
@@ -93,13 +88,12 @@ function createserver() {
         });
         const _id = parseInt(req.params["id"]);
         if (myMap.has(_id)) {
-            myJSON = myJSON.filter((book) => book.id !== _id);
-            let json = JSON.stringify(myJSON);
-            fs_1.default.writeFile("src/books.json", json, function (err) {
+            let myNewJSON = myJSON.filter((book) => book.id !== _id);
+            let newBookList = JSON.stringify(myNewJSON);
+            fs_1.default.writeFile("src/books.json", newBookList, function (err) {
                 if (err)
                     return console.log(err);
                 res.json({ Response: "The book was deleted" });
-                console.log(myJSON);
             });
         }
         else {
