@@ -87,7 +87,6 @@ function createserver() {
     let myJSON: Book[] = JSON.parse(
       fs.readFileSync("src/books.json").toString()
     );
-
     let myMap = new Map();
     myJSON.forEach((book: Book) => {
       myMap.set(book.id, <Book>book);

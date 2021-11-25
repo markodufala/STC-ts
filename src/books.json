@@ -42,7 +42,7 @@
   {
     "id": 5,
     "name": "Book5",
-    "author": ["Author4"],
+    "author": ["Author5"],
     "genre": ["genre5"],
     "published": 1985,
     "publisher": "publisher4",
