@@ -22,6 +22,19 @@ function newMap() {
   });
 }
 
+let findBooks = function (author: string = "", name: string = "", book: Book) {
+  if (author) {
+      for(let i = 0; i < book.author.length; i++){
+          if (book.author[i].toLowerCase().includes(author.toLowerCase())){
+              return book
+          }
+      }
+  }
+  else if (name) {
+      return book.name.toLowerCase().includes(name.toLowerCase()) ? book : false;
+  } 
+}
+
 function createserver() {
   app = express();
   app.use(cors());
@@ -33,7 +46,14 @@ function createserver() {
   });
 
   app.get("/api/library/book/:id/info", (req, res) => {
-    newMap();
+    let myJSON: Book[] = JSON.parse(
+      fs.readFileSync("src/books.json").toString()
+    );
+    let myMap = new Map();
+    myJSON.forEach((book: Book) => {
+      myMap.set(book.id, <Book>book);
+    });
+
     const _id = parseInt(req.params["id"]);
     if (myMap.has(_id)) {
       const book = myMap.get(_id);
@@ -49,7 +69,14 @@ function createserver() {
   });
 
   app.post("/api/library/book/:id/info", (req, res) => {
-    newMap();
+    let myJSON: Book[] = JSON.parse(
+      fs.readFileSync("src/books.json").toString()
+    );
+    let myMap = new Map();
+    myJSON.forEach((book: Book) => {
+      myMap.set(book.id, <Book>book);
+    });
+
     const _id = parseInt(req.params["id"]);
     if (myMap.has(_id)) {
       const book = myMap.get(_id);
@@ -59,30 +86,87 @@ function createserver() {
     }
   });
 
-  app.put("/api/library/book/:id/add", (req, res) => {
-    newMap();
+  app.post("/api/library/book/find/author", (req, res) => {
+    let myJSON: Book[] = JSON.parse(
+      fs.readFileSync("src/books.json").toString()
+    );
+    let myMap = new Map();
+    myJSON.forEach((book: Book) => {
+      myMap.set(book.id, <Book>book);
+    });
 
-    const _id = parseInt(req.params["id"]);
-    if (myMap.has(_id)) {
-      res.json({ Response: "There is already book in the json with this ID" });
-    } else {
-      myJSON.push({
-        id: _id,
-        name: req.body["name"],
-        author: req.body["author"],
-        genre: req.body["genre"],
-        year_published: req.body["published"],
-        publisher: req.body["publisher"],
-        country: req.body["origin_country"],
-        number_of_pages: req.body["pages"],
-      });
-      let newBookList = JSON.stringify(myJSON);
-      fs.writeFile("src/books.json", newBookList, function (err) {
-        if (err) return console.log(err);
-        res.json({ Response: "The book was added" });
-      });
-    }
+    const author = req.body["author"];
+    let responseBooks: Array<Book> = myJSON.filter((book) => findBooks(author, undefined, book));
+    // Sending response - array of book that have match in authors name
+    // responseBooks.forEach((book: Book) => {
+    //   console.log(book)
+    // })
+    res.json(responseBooks);
   });
+
+
+  app.post("/api/library/book/find/name", (req, res) => {
+    let myJSON: Book[] = JSON.parse(
+      fs.readFileSync("src/books.json").toString()
+    );
+    let myMap = new Map();
+    myJSON.forEach((book: Book) => {
+      myMap.set(book.id, <Book>book);
+    });
+    
+    // Getting books's name from request parameters
+    const name = req.body["name"];
+    // Filtering books by name
+    const responseBooks: Array<Book> = myJSON.filter(book => findBooks(undefined, name, book));
+    // Sending response - array of book that have match in book's name
+    res.json(responseBooks);
+});
+
+
+  app.put("/api/library/book/add", (req, res) => {
+    let myJSON: Book[] = JSON.parse(
+      fs.readFileSync("src/books.json").toString()
+    );
+    let myMap = new Map();
+    myJSON.forEach((book: Book) => {
+      myMap.set(book.id, <Book>book);
+    });
+
+
+    let _id = 0
+
+
+    _id = Math.floor(Math.random() * (100 + 1));
+
+    if (myMap.has(_id)){
+
+    }
+    else{
+
+    }
+
+
+
+    myJSON.push({
+      id: _id,
+      name: req.body["name"],
+      author: req.body["author"],
+      genre: req.body["genre"],
+      year_published: req.body["published"],
+      publisher: req.body["publisher"],
+      country: req.body["origin_country"],
+      number_of_pages: req.body["pages"], 
+     });
+
+    let newBookList = JSON.stringify(myJSON);
+    fs.writeFile("src/books.json", newBookList, function (err) {
+      if (err) return console.log(err);
+      res.json({ Response: "The book was added" });
+    });
+  });
+
+  
+  
   app.delete("/api/library/book/:id/delete", (req, res) => {
     let myJSON: Book[] = JSON.parse(
       fs.readFileSync("src/books.json").toString()
