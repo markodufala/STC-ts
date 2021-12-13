@@ -14,24 +14,6 @@ let myMap = new Map();
 myJSON.forEach((book) => {
     myMap.set(book.id, book);
 });
-function newMap() {
-    myJSON = JSON.parse(fs_1.default.readFileSync("src/books.json").toString());
-    myJSON.forEach((book) => {
-        myMap.set(book.id, book);
-    });
-}
-let findBooks = function (author = "", name = "", book) {
-    if (author) {
-        for (let i = 0; i < book.author.length; i++) {
-            if (book.author[i].toLowerCase().includes(author.toLowerCase())) {
-                return book;
-            }
-        }
-    }
-    else if (name) {
-        return book.name.toLowerCase().includes(name.toLowerCase()) ? book : false;
-    }
-};
 function createserver() {
     app = (0, express_1.default)();
     app.use((0, cors_1.default)());
@@ -40,12 +22,14 @@ function createserver() {
     http_1.default.createServer(app).listen(3000, () => {
         console.log("Running server on port 3000");
     });
+    // updating and creating map of book from Json
     app.get("/api/library/book/:id/info", (req, res) => {
         let myJSON = JSON.parse(fs_1.default.readFileSync("src/books.json").toString());
         let myMap = new Map();
         myJSON.forEach((book) => {
             myMap.set(book.id, book);
         });
+        // request parameter later used in if for returning values
         const _id = parseInt(req.params["id"]);
         if (myMap.has(_id)) {
             const book = myMap.get(_id);
@@ -69,7 +53,7 @@ function createserver() {
         const _id = parseInt(req.params["id"]);
         if (myMap.has(_id)) {
             const book = myMap.get(_id);
-            res.json(book);
+            res.json(book); // returning whole object
         }
         else {
             res.json({ Response: "There is no book in the json with this ID" });
@@ -82,12 +66,15 @@ function createserver() {
             myMap.set(book.id, book);
         });
         const author = req.body["author"];
-        let responseBooks = myJSON.filter((book) => findBooks(author, undefined, book));
-        // Sending response - array of book that have match in authors name
-        // responseBooks.forEach((book: Book) => {
-        //   console.log(book)
-        // })
-        res.json(responseBooks);
+        let filteredBooks = [];
+        /* In this for loop whe are searching for the chars from the author name in string */
+        for (let i = 0; i < myJSON.length; i++) {
+            if (myJSON[i].author.toString().toLowerCase().includes(author.toLowerCase())) {
+                filteredBooks.push(myJSON[i]);
+            }
+        }
+        // response of filtered books
+        res.json(filteredBooks);
     });
     app.post("/api/library/book/find/name", (req, res) => {
         let myJSON = JSON.parse(fs_1.default.readFileSync("src/books.json").toString());
@@ -95,12 +82,15 @@ function createserver() {
         myJSON.forEach((book) => {
             myMap.set(book.id, book);
         });
-        // Getting books's name from request parameters
         const name = req.body["name"];
-        // Filtering books by name
-        const responseBooks = myJSON.filter(book => findBooks(undefined, name, book));
-        // Sending response - array of book that have match in book's name
-        res.json(responseBooks);
+        let filteredBooks = [];
+        /* In this for loop whe are searching for the chars from the book name in string */
+        for (let i = 0; i < myJSON.length; i++) {
+            if (myJSON[i].name.toString().toLowerCase().includes(name.toLowerCase())) {
+                filteredBooks.push(myJSON[i]);
+            }
+        }
+        res.json(filteredBooks);
     });
     app.put("/api/library/book/add", (req, res) => {
         let myJSON = JSON.parse(fs_1.default.readFileSync("src/books.json").toString());
@@ -109,7 +99,10 @@ function createserver() {
             myMap.set(book.id, book);
         });
         let _id = 0;
-        _id = Math.floor(Math.random() * (100 + 1));
+        // Generating new and random id
+        do {
+            _id = Math.floor(Math.random() * (100 + 1));
+        } while (_id === 0 || myMap.has(_id));
         myJSON.push({
             id: _id,
             name: req.body["name"],
@@ -120,6 +113,7 @@ function createserver() {
             country: req.body["origin_country"],
             number_of_pages: req.body["pages"],
         });
+        // writing that new book into the json
         let newBookList = JSON.stringify(myJSON);
         fs_1.default.writeFile("src/books.json", newBookList, function (err) {
             if (err)
@@ -134,6 +128,7 @@ function createserver() {
             myMap.set(book.id, book);
         });
         const _id = parseInt(req.params["id"]);
+        // filtering json by the given id
         if (myMap.has(_id)) {
             let myNewJSON = myJSON.filter((book) => book.id !== _id);
             let newBookList = JSON.stringify(myNewJSON);
